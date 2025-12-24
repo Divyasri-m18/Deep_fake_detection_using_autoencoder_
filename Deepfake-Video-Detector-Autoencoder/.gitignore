@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# Data
+data/
+kaggle_140k/
+processed/
+raw/
+samples/
+
+# Jupyter
+.ipynb_checkpoints
+
+# OS
+.DS_Store
+
+# Streamlit
+.streamlit/secrets.toml

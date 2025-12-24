@@ -1,0 +1,36 @@
+# Deepfake Video Detector Configuration
+
+paths:
+  # Data paths
+  raw_real_videos: "data/raw/real"
+  raw_fake_videos: "data/raw/fake"
+  processed_faces: "data/processed/faces"
+  processed_frames: "data/processed/frames"
+  
+  # Kaggle Dataset Path (140k-real-and-fake-faces)
+  # Expected structure: data/kaggle_140k/real_vs_fake/real-vs-fake/real/...
+  kaggle_data_path: "data/kaggle_140k" 
+  
+  # Model paths
+  model_save_dir: "models/trained"
+  autoencoder_path: "models/trained/autoencoder.pth"
+  
+  # Sample data for testing
+  sample_video: "data/samples/test_video.mp4"
+
+preprocessing:
+  frame_interval: 10  # Extract every Nth frame
+  face_size: 128      # Resize faces to 128x128 
+  conf_threshold: 0.95 # MTCNN detection confidence
+
+training:
+  batch_size: 64      # Increased for EfficientNet stability if memory allows
+  learning_rate: 0.0002
+  epochs: 1
+  latent_dim: 1280    # Matches EfficientNet-B0 output channels (1280)
+  use_gpu: false
+  validation_split: 0.2
+
+inference:
+  # Threshold for reconstruction error to classify as FAKE
+  mse_threshold: 0.02 # Lowered slightly for EfficientNet's sharper reconstructions
