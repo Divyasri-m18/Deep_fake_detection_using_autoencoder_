@@ -1,0 +1,39 @@
+# Implementation Plan - EfficientNet Autoencoder & Kaggle Data
+
+## Goals
+1.  **Architecture Upgrade**: Adapt `selimsef/dfdc_deepfake_challenge` concepts by using **EfficientNet-B0** as the Encoder.
+2.  **Dataset Integration**: Support the **140k-real-and-fake-faces** Kaggle dataset for high-accuracy training.
+
+## User Review Required
+> [!IMPORTANT]
+> **Dataset Setup**: I cannot download the 140k dataset directly. You will need to download it from Kaggle and unzip it into `data/kaggle_140k/`.
+> **Training**: The Autoencoder will be trained **ONLY on the 'real'** folder from this dataset.
+
+## Proposed Changes
+
+### [Models]
+#### [MODIFY] [models/autoencoder.py](file:///C:/Users/RAJAGANAPATHY/DPFD/Deepfake-Video-Detector-Autoencoder/models/autoencoder.py)
+- **New Architecture**: EfficientNet-B0 Encoder + Symmetric Decoder.
+- **Input Size**: Standardize to 224x224 (EfficientNet standard) or keep 128x128. Will stick to 128x128 for speed unless quality suffers, but 224 is better for EfficientNet features. **Decision: Resizing to 128x128 for efficiency.**
+
+### [Preprocessing & Data]
+#### [MODIFY] [configs/config.yaml](file:///C:/Users/RAJAGANAPATHY/DPFD/Deepfake-Video-Detector-Autoencoder/configs/config.yaml)
+- Add paths for Kaggle dataset.
+- Update model parameters (latent dim checks).
+
+#### [MODIFY] [preprocessing/normalize_faces.py](file:///C:/Users/RAJAGANAPATHY/DPFD/Deepfake-Video-Detector-Autoencoder/preprocessing/normalize_faces.py)
+- Update [FaceDataset](file:///C:/Users/RAJAGANAPATHY/DPFD/Deepfake-Video-Detector-Autoencoder/preprocessing/normalize_faces.py#9-30) to recursively search for images, as the Kaggle dataset might have subfolders or slightly different structure (`real-vs-fake/real`, etc.).
+
+### [Training]
+#### [MODIFY] [training/train_autoencoder.py](file:///C:/Users/RAJAGANAPATHY/DPFD/Deepfake-Video-Detector-Autoencoder/training/train_autoencoder.py)
+- Update data loading logic to prioritize the Kaggle dataset if present.
+- Add **Data Augmentation** (RandomErasing, ColorJitter) to improve robustness (inspired by `selimsef`).
+
+### [Requirements]
+#### [MODIFY] [requirements.txt](file:///C:/Users/RAJAGANAPATHY/DPFD/Deepfake-Video-Detector-Autoencoder/requirements.txt)
+- Add `efficientnet_pytorch` (optional, or use torchvision) and `albumentations` (if needed, but torchvision transforms are enough).
+
+## Verification Plan
+1.  **Download Check**: User must confirm data is in place.
+2.  **Model Forward Pass**: Verify EfficientNet encoder produces expected feature map shapes.
+3.  **Training Dry Run**: Run training on a small subset of dummy data to verify the new pipeline.
